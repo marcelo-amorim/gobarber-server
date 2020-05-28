@@ -112,10 +112,12 @@ describe('UpdateUserAvatar', () => {
   });
 
   it('should not be able to update profile from non existing user', async () => {
-    await expect(updateProfile.execute({
-      user_id: 'non-existing-user-id',
-      name: 'teste',
-      email: 'test@email.com',
-    })).rejects.toBeInstanceOf(AppError);
+    await expect(
+      updateProfile.execute({
+        user_id: 'non-existing-user-id',
+        name: 'teste',
+        email: 'test@email.com',
+      }),
+    ).rejects.toBeInstanceOf(AppError);
   });
 });

@@ -28,10 +28,10 @@ describe('UpdateUserAvatar', () => {
   });
 
   it('should not be able to show profile from non existing user', async () => {
-    await expect(showProfile.execute({
-      user_id: 'non-existing-user-id'
-    })).rejects.toBeInstanceOf(AppError);
+    await expect(
+      showProfile.execute({
+        user_id: 'non-existing-user-id',
+      }),
+    ).rejects.toBeInstanceOf(AppError);
   });
-
-
 });

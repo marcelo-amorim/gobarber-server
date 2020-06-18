@@ -10,7 +10,7 @@ let fakeAppointmentsRepository: FakeAppointmentsRepository;
 let fakeNotificationsReposity: FakeNotificationsRepository;
 let createAppointment: CreateAppointmentService;
 
-describe('CreateAppointment', () => {
+describe('CreateAppointmentService', () => {
   beforeEach(() => {
     fakeAppointmentsRepository = new FakeAppointmentsRepository();
     fakeNotificationsReposity = new FakeNotificationsRepository();
@@ -36,7 +36,7 @@ describe('CreateAppointment', () => {
   });
 
   it('should not be able to create two appointments at the same time', async () => {
-    jest.spyOn(Date, 'now').mockImplementationOnce(() => {
+    jest.spyOn(Date, 'now').mockImplementation(() => {
       return new Date(2020, 4, 10).getTime();
     });
 

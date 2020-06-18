@@ -10,7 +10,7 @@ let fakeHashProvider: FakeHashProvider;
 
 let createUser: CreateUserService;
 
-describe('CreateUser', () => {
+describe('CreateUserService', () => {
   beforeEach(() => {
     fakeUsersRepository = new FakeUsersRepository();
     fakeHashProvider = new FakeHashProvider();

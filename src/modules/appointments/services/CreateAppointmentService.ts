@@ -1,8 +1,10 @@
-import { startOfHour, isBefore, getHours, format } from 'date-fns';
+import ptBR, { startOfHour, isBefore, getHours, format } from 'date-fns';
+
 import { injectable, inject } from 'tsyringe';
 
 import AppError from '@shared/errors/AppError';
 
+import ICacheProvider from '@shared/container/providers/CacheProvider/models/ICacheProvider';
 import INotificationsRepository from '@modules/notifications/repositories/INotificationsRepository';
 import IAppointmentsRepository from '../repositories/IAppointmentsRepository';
 import Appointment from '../infra/typeorm/entities/Appointment';
@@ -21,6 +23,9 @@ class CreateAppointmentService {
 
     @inject('NotificationsRepository')
     private notificationsRepository: INotificationsRepository,
+
+    @inject('CacheProvider')
+    private cacheProvider: ICacheProvider,
   ) {}
 
   public async execute({
@@ -29,7 +34,6 @@ class CreateAppointmentService {
     provider_id,
   }: IRequest): Promise<Appointment> {
     const appointmentDate = startOfHour(date);
-
     if (isBefore(appointmentDate, Date.now())) {
       throw new AppError("You can't create an appointment on a past date.");
     }
@@ -45,6 +49,7 @@ class CreateAppointmentService {
 
     const findAppointmentInSameDate = await this.appointmentsRepository.findByDate(
       appointmentDate,
+      provider_id,
     );
 
     if (findAppointmentInSameDate) {
@@ -57,12 +62,21 @@ class CreateAppointmentService {
       date: appointmentDate,
     });
 
-    const formattedDate = format(appointmentDate, "dd/MM/yyyy 'às' HH:mm'h'");
+    const formattedDate = format(appointmentDate, "dd/MM/yyyy 'às' HH:mm'h'", {
+      locale: ptBR,
+    });
 
     await this.notificationsRepository.create({
       recipient_id: provider_id,
       content: `Novo agendamento para o dia ${formattedDate}`,
     });
+
+    await this.cacheProvider.invalidate(
+      `provider-appointments:${provider_id}:${format(
+        appointmentDate,
+        'yyyy-M-d',
+      )}`,
+    );
 
     return appointment;
   }
